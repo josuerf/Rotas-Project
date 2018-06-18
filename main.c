@@ -98,7 +98,7 @@ IncidNo *insereIncid(IncidNo *incid, int num) {
     return incid;
 }
 
-CidNo *insereNo(CidNo *nos, int idx, int distancia) {
+CidNo *insereNo(CidNo *nos, int idx, int distancia, int parentIdx) {
     CidNo *noAux = nos;
     CidNo *novo = (CidNo*) malloc(sizeof (CidNo));
     novo->cidade = idx;
@@ -113,6 +113,7 @@ CidNo *insereNo(CidNo *nos, int idx, int distancia) {
     } else {
         nos = novo;
     }
+    insereIncid(incid[idx].adjacentes, parentIdx);
     return nos;
 }
 
@@ -133,7 +134,7 @@ void buscaLigaRemove(int incidIdx, char cidade[]) {
     CidNo *holder, *ant;
     int i = 0;
     for (holder = vert[incidIdx].adjacentes; holder.prox != NULL; holder = holder->prox) {
-        if (strcmp(buscaIndice(holder->cidade),cidade) {
+        if (strcmp(buscaIndice(holder->cidade), cidade)) {
             if (i == 0) {
                 vert[globalIdx].adjacentes->prox = holder->prox;
                 free(holder);
@@ -172,10 +173,26 @@ int buscaIndice(char cidade[]) {
     return i;
 }
 
-char* buscaNomeCidade(int idx) {
-    int i;
-    for (i = 0; i < globalIdx; i++) {
-        if(c)
+void atualizaCidade(int idxVert, char nome[], int distancia, int idxNo) {
+    if (sizeof (nome) > 0) {
+        strcpy(vert[idxVert].nome, nome);
+    }
+    if (distancia != -1) {
+        CidNo *hold = vert[idxVert].adjacentes;
+        for (; hold != NULL; hold = hold->prox) {
+            if (hold->cidade == idxNo) {
+                hold->distancia = distancia;
+            }
+        }
+    }
+}
+
+void listarNos(int idxVert) {
+    CidNo *hold = vert[idxVert].adjacentes;
+    printf("Cidade %s\n",vert[idxVert].nome);
+    printf("Destinos: \n");
+    for (; hold != NULL; hold = hold->prox) {
+        printf("Nome: %s\tDistância: %d\n",vert[hold->cidade].nome,hold->distancia);
     }
 }
 
