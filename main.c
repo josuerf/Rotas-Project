@@ -11,56 +11,44 @@
 #include <string.h>
 
 #include "main.h"
-#include "vertices.h"
 
 CidVert vert[50] = {};
 Incid incid[50] = {};
-char oldIni[20] = {};
+int oldIni;
 int remIdx = -1;
 int retorno = 0;
 int globalIdx = 9;
+int start = 1;
 
 int main(int argc, char** argv) {
     setlocale(LC_ALL, "Portuguese");
     fillList();
-    printf(">> Trajeto <<\n");
-    buscaLiga("SM", "POA");
-    if (retorno == 0) {
-        printf("Caminho NÃ£o Econtrado!\n");
-    }
+    menuPrincipal();
     return (EXIT_SUCCESS);
 }
 
-void menuPrincipal() {
-    int opc;
-    printf(">> Bem Vindo Ao Mapa RodoviÃ¡rio <<\n1.");
-    while (opc != 9) {
-
-        switch (opc) {
-            case 1:
-                break;
-            case 2:
-                break;
-        }
-    }
-}
-
-void buscaCid(char ini[], char dest[]) {
-    if (ini == dest) {
-        printf("Caminho PossÃ­vel em: [%s][%s]\n", oldIni, dest);
+void buscaCid(int ini, char dest[]) {
+    CidNo *holder = vert[ini].adjacentes;
+    if (strcmp(vert[ini].nome, dest)) {
+        printf("Caminho Possível em: [%s][%s]\n", vert[ini].nome, dest);
+        printf(">> FIM <<\n");
         retorno = 1;
         return;
     } else if (ini == oldIni) {
         retorno = 0;
         return;
     } else {
-        for (; vert[ini].adjacentes != NULL; vert[ini].adjacentes = vert[ini].adjacentes->prox) {
-            int num = vert[ini].adjacentes->num;
+        for (; holder != NULL; holder = holder->prox) {
+            int num = holder->cidade;
             if (vert[num].visitado != 1) {
+                if (start) {
+                    printf("\n>> Início <<\n");
+                }
+                printf("de %s -> %s\n", vert[ini].nome, dest);
                 oldIni = ini;
                 vert[ini].visitado = 1;
-                printf("[%s][%s]\n", ini, num);
-                buscaLiga(num, dest);
+                printf("[%s][%s]\n", vert[ini].nome, vert[num].nome);
+                buscaCid(num, dest);
                 if (retorno == 1) {
                     break;
                 }
@@ -77,7 +65,7 @@ void InsereVertice(char nome[]) {
     } else {
         idxHolder = globalIdx++;
     }
-    strcpy(vert[idxHolder], nome);
+    strcpy(vert[idxHolder].nome, nome);
     vert[idxHolder].visitado = 0;
     vert[idxHolder].adjacentes = NULL;
     remIdx = -1;
@@ -126,15 +114,16 @@ void removerCidade(char cidade[]) {
         buscaLigaRemove(holder->num, cidade);
         holder = holder->prox;
     }
-    removerNo(incid[index].adjacentes);
+    removerNoIncid(incid[index].adjacentes);
     incid[index].adjacentes = NULL;
 }
 
 void buscaLigaRemove(int incidIdx, char cidade[]) {
     CidNo *holder, *ant;
+    int cidIndex = buscaIndice(cidade);
     int i = 0;
-    for (holder = vert[incidIdx].adjacentes; holder.prox != NULL; holder = holder->prox) {
-        if (strcmp(buscaIndice(holder->cidade), cidade)) {
+    for (holder = vert[incidIdx].adjacentes; holder->prox != NULL; holder = holder->prox) {
+        if (holder->cidade == cidIndex) {
             if (i == 0) {
                 vert[globalIdx].adjacentes->prox = holder->prox;
                 free(holder);
@@ -155,11 +144,11 @@ void removerNo(CidNo *no) {
     free(no);
 }
 
-void removerNo(IncidNo *no) {
-    if (no->prox != NULL) {
-        removerNo(no->prox);
+void removerNoIncid(IncidNo *incidNo) {
+    if (incidNo->prox != NULL) {
+        removerNoIncid(incidNo->prox);
     }
-    free(no);
+    free(incidNo);
 }
 
 int buscaIndice(char cidade[]) {
@@ -189,10 +178,10 @@ void atualizaCidade(int idxVert, char nome[], int distancia, int idxNo) {
 
 void listarNos(int idxVert) {
     CidNo *hold = vert[idxVert].adjacentes;
-    printf("Cidade %s\n",vert[idxVert].nome);
+    printf("Cidade %s\n", vert[idxVert].nome);
     printf("Destinos: \n");
     for (; hold != NULL; hold = hold->prox) {
-        printf("Nome: %s\tDistÃ¢ncia: %d\n",vert[hold->cidade].nome,hold->distancia);
+        printf("Nome: %s\tDistância: %d\n", vert[hold->cidade].nome, hold->distancia);
     }
 }
 
@@ -215,10 +204,10 @@ void fillList() {
     strcpy(vert[5].nome, "POA");
     incid[5].num = 5;
     incid[5].adjacentes = NULL;
-    strcpy(vert[6].nome, "SÃ£o Borja");
+    strcpy(vert[6].nome, "São Borja");
     incid[6].num = 6;
     incid[6].adjacentes = NULL;
-    strcpy(vert[7].nome, "SÃ£o Gabriel");
+    strcpy(vert[7].nome, "São Gabriel");
     incid[7].num = 7;
     incid[7].adjacentes = NULL;
     strcpy(vert[8].nome, "Santiago");
@@ -227,22 +216,22 @@ void fillList() {
     strcpy(vert[9].nome, "SM");
     incid[9].num = 9;
     incid[9].adjacentes = NULL;
-    vert[0].adjacentes = insereNo(vert[0].adjacentes, 6, 315);
-    vert[1].adjacentes = insereNo(vert[1].adjacentes, 7, 268);
-    vert[2].adjacentes = insereNo(vert[2].adjacentes, 3, 149);
-    vert[2].adjacentes = insereNo(vert[2].adjacentes, 9, 134);
-    vert[3].adjacentes = insereNo(vert[3].adjacentes, 5, 289);
-    vert[4].adjacentes = insereNo(vert[4].adjacentes, 1, 189);
-    vert[5].adjacentes = insereNo(vert[5].adjacentes, 4, 261);
-    vert[5].adjacentes = insereNo(vert[5].adjacentes, 1, 377);
-    vert[6].adjacentes = insereNo(vert[6].adjacentes, 8, 141);
-    vert[7].adjacentes = insereNo(vert[7].adjacentes, 0, 204);
-    vert[8].adjacentes = insereNo(vert[8].adjacentes, 2, 242);
-    vert[9].adjacentes = insereNo(vert[9].adjacentes, 8, 152);
-    vert[9].adjacentes = insereNo(vert[9].adjacentes, 0, 258);
-    vert[9].adjacentes = insereNo(vert[9].adjacentes, 7, 182);
-    vert[9].adjacentes = insereNo(vert[9].adjacentes, 1, 239);
-    vert[9].adjacentes = insereNo(vert[9].adjacentes, 5, 291);
+    vert[0].adjacentes = insereNo(vert[0].adjacentes, 6, 315, 0);
+    vert[1].adjacentes = insereNo(vert[1].adjacentes, 7, 268, 1);
+    vert[2].adjacentes = insereNo(vert[2].adjacentes, 3, 149, 2);
+    vert[2].adjacentes = insereNo(vert[2].adjacentes, 9, 134, 2);
+    vert[3].adjacentes = insereNo(vert[3].adjacentes, 5, 289, 3);
+    vert[4].adjacentes = insereNo(vert[4].adjacentes, 1, 189, 4);
+    vert[5].adjacentes = insereNo(vert[5].adjacentes, 4, 261, 5);
+    vert[5].adjacentes = insereNo(vert[5].adjacentes, 1, 377, 6);
+    vert[6].adjacentes = insereNo(vert[6].adjacentes, 8, 141, 6);
+    vert[7].adjacentes = insereNo(vert[7].adjacentes, 0, 204, 7);
+    vert[8].adjacentes = insereNo(vert[8].adjacentes, 2, 242, 8);
+    vert[9].adjacentes = insereNo(vert[9].adjacentes, 8, 152, 9);
+    vert[9].adjacentes = insereNo(vert[9].adjacentes, 0, 258, 9);
+    vert[9].adjacentes = insereNo(vert[9].adjacentes, 7, 182, 9);
+    vert[9].adjacentes = insereNo(vert[9].adjacentes, 1, 239, 9);
+    vert[9].adjacentes = insereNo(vert[9].adjacentes, 5, 291, 9);
     incid[6].adjacentes = insereIncid(incid[6].adjacentes, 0);
     incid[7].adjacentes = insereIncid(incid[7].adjacentes, 1);
     incid[7].adjacentes = insereIncid(incid[7].adjacentes, 9);
@@ -260,3 +249,121 @@ void fillList() {
     incid[8].adjacentes = insereIncid(incid[8].adjacentes, 6);
     incid[9].adjacentes = insereIncid(incid[9].adjacentes, 2);
 }
+
+void menuPrincipal() {
+    int opc;
+    while (opc != 9) {
+        system("cls");
+        printf(">> Bem Vindo Ao Mapa Rodoviário <<\n1. Visualizar Rotas\n2. Cadastrar Dados"
+                "\n3. Remover Dados\n4. Alterar Dados de Uma Cidade\n9. Sair\nOPC: ");
+        scanf("%d", &opc);
+        switch (opc) {
+            case 1:
+                menuVisualizar();
+                break;
+            case 2:
+                menuCadastrar();
+                break;
+            case 3:
+                menuRemover();
+                break;
+            case 4:
+                menuAlterar();
+                break;
+            case 9:
+                return;
+            default:
+                printf("Opção Inválida");
+                break;
+        }
+    }
+}
+
+void menuVisualizar() {
+    int opc;
+    while (opc != 9) {
+        system("cls");
+        printf("1. Visualizar Cidades Vizinhas\n2. Visualizar Rotas Entre Cidades\n9. Retornar");
+        scanf("%d", &opc);
+        switch (opc) {
+            case 1:
+                menuCidadesVizinhas();
+                break;
+            case 2:
+                menuRotaCidades();
+                break;
+            case 9:
+                return;
+            default:
+                printf("Opção Inválida!");
+                break;
+        }
+    }
+}
+
+void menuCadastrar() {
+    int opc;
+    while (opc != 9) {
+        system("cls");
+        printf("1. Cadastrar Cidade\n2. Cadastrar Caminho\n9. Retornar");
+        scanf("%d", &opc);
+        switch (opc) {
+            case 1:
+                menuInserirCidade();
+                break;
+            case 2:
+                menuInserirCaminho();
+                break;
+            case 9:
+                return;
+            default:
+                printf("Opção Inválida!");
+                break;
+        }
+    }
+}
+
+void menuRemover() {
+    int opc;
+    while (opc != 9) {
+        system("cls");
+        printf("1. Remover Cidade\n2. Remover Caminho\n9. Retornar");
+        scanf("%d", &opc);
+        switch (opc) {
+            case 1:
+                menuRemoverCidade();
+                break;
+            case 2:
+                menuRemoverCaminho();
+                break;
+            case 9:
+                return;
+            default:
+                printf("Opção Inválida!");
+                break;
+        }
+    }
+}
+
+void menuAlterar() {
+    int opc;
+    while (opc != 9) {
+        system("cls");
+        printf("1. Alterar Dados Cidade\n2. Alterar Distância Entre Cidades\n9. Retornar");
+        scanf("%d", &opc);
+        switch (opc) {
+            case 1:
+                menuAlterarCidade();
+                break;
+            case 2:
+                menuDistanciaCidade();
+                break;
+            case 9:
+                return;
+            default:
+                printf("Opção Inválida!");
+                break;
+        }
+    }
+}
+

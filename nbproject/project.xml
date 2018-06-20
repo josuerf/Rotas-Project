@@ -7,7 +7,7 @@
             <c-extensions>c</c-extensions>
             <cpp-extensions/>
             <header-extensions>h</header-extensions>
-            <sourceEncoding>UTF-8</sourceEncoding>
+            <sourceEncoding>windows-1252</sourceEncoding>
             <make-dep-projects/>
             <sourceRootList/>
             <confList>

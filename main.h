@@ -12,19 +12,24 @@
  */
 
 #ifndef MAIN_H
-
+#include "vertices.h"
+#include "menus.h"
 #define MAIN_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 void buscaLiga(char ini[], char dest[]);
-CidNo *insereNo(CidNo *nos, int idx, int distancia);
+CidNo *insereNo(CidNo *nos, int idx, int distancia, int parentIdx);
 void fillList();
 void InsereVertice(char nome[]);
 void removerCidade(char cidade[]);
-void removerNo(char cidade[]);
+void removerNo(CidNo *no);
+void removerNoIncid(IncidNo *no);
 int buscaIndice(char cidade[]);
+void buscaLigaRemove(int incidIdx, char cidade[]);
+void atualizaCidade(int idxVert, char nome[], int distancia, int idxNo);
+void listarNos(int idxVert);
 #ifdef __cplusplus
 }
 #endif

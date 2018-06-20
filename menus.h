@@ -11,7 +11,11 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
+void menuPrincipal();
+void menuVisualizar();
+void menuCadastrar();
+void menuRemover();
+void menuAlterar();
 
 
 
