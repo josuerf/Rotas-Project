@@ -16,8 +16,14 @@ void menuVisualizar();
 void menuCadastrar();
 void menuRemover();
 void menuAlterar();
-
-
+void menuCidadesVizinhas();
+void menuRotaCidades();
+void menuInserirCidade();
+void menuInserirCaminho();
+void menuRemoverCidade();
+void menuRemoverCaminho();
+void menuAlterarNome();
+void menuAlterarDistancia();
 
 #ifdef __cplusplus
 }

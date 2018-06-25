@@ -17,17 +17,20 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-struct cid_no{
-	int cidade;
+
+struct cid_no {
+        int cidade;
         int distancia;
-	struct cid_no *prox;
-};
-struct incid_no{
-    int num;
-    struct incid_no *prox;
-};
-typedef struct incid_no IncidNo;
-typedef struct cid_no CidNo;
+        int visitado;
+        struct cid_no *prox;
+    };
+
+    struct incid_no {
+        int num;
+        struct incid_no *prox;
+    };
+    typedef struct incid_no IncidNo;
+    typedef struct cid_no CidNo;
 
 
 #ifdef __cplusplus

@@ -15,7 +15,7 @@ extern "C" {
 
 struct cid_vert{
 	char nome[20];
-	int visitado;
+        int ativo;
 	struct cid_no *adjacentes;
 };
 struct incid_vert{
